@@ -24,29 +24,34 @@ const TodoList: React.FC = () => {
         (prevItems: ITask[]) =>
           [
             ...prevItems,
-            { text: inputValue, completed: false } as ITask,
+            {
+              id: Date.now().toString(),
+              text: inputValue,
+              completed: false,
+              subtasks: [],
+            } as ITask,
           ] as ITask[]
       );
       setInputValue(""); // Clear the input after adding the item
     }
   };
 
-  const toggleTaskCompletion = (index: number) => {
+  const toggleTaskCompletion = (id: string) => {
     setTasks((prevTasks) =>
-      prevTasks.map((task, i) =>
-        i === index ? { ...task, completed: !task.completed } : task
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
   };
 
   const handleTaskNameChange = (
-    index: number,
+    id: string,
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newText = event.target.value;
     setTasks((prevTasks) =>
-      prevTasks.map((task, i) =>
-        i === index ? { ...task, text: newText } : task
+      prevTasks.map((task) =>
+        task.id === id ? { ...task, text: newText } : task
       )
     );
   };
@@ -70,14 +75,17 @@ const TodoList: React.FC = () => {
           {tasks.length > 0 ? (
             tasks
               .sort((currentTask, nextTask) =>
-                currentTask.completed === nextTask.completed ? 0 : 
-                  currentTask.completed ? 1 : -1
+                currentTask.completed === nextTask.completed
+                  ? 0
+                  : currentTask.completed
+                  ? 1
+                  : -1
               ) // sort based on completion
-              .map((task, index) => (
+              .map((task) => (
                 <Task
-                  key={index}
+                  key={task.id}
                   task={task}
-                  index={index}
+                  id={task.id}
                   toggleTaskCompletion={toggleTaskCompletion}
                   handleTaskNameChange={handleTaskNameChange}
                 />
